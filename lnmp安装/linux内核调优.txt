@@ -1,0 +1,18 @@
+linux下，当用webbench测试nginx+php的性能时，测试停止后一段时间，nginx访问非常的
+慢，基本没法访问。后来发现，原因是tcp的time_wait非常的大。
+我使用
+webbench -c 800 -t 50 url
+url是网站的登录操作，这个url是实现用户的登录操作，所以有数据库层面的操作。
+
+[root@yungengxin controllers]# netstat -n | awk '/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}'
+TIME_WAIT 56733
+SYN_SENT 27
+ESTABLISHED 26
+
+几分钟过后，再次查看time_wait，值已经变为0了。可见是linux内核配置参数的问题。
+
+解决办法：
+参考网页：http://bbs.linuxtone.org/thread-853-1-1.html
+
+
+http://winginx.com/htaccess

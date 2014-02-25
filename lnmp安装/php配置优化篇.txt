@@ -1,0 +1,12 @@
+php配置优化篇
+1.php-fpm连接数配置优化
+2.php缓存，apc安装
+下载地址：http://pecl.php.net/package/optimizer
+http://pecl.php.net/get/APC-3.1.13.tgz
+
+wget http://pecl.php.net/get/APC-3.1.13.tgz
+tar zxvf APC-3.1.13.tgz 
+cd APC-3.1.13
+/usr/local/php-5.4.25/bin/phpize 
+./configure --enable-apc --enable-apc-spinlocks --disable-apc-pthreadmutex --with-php-config=/usr/local/php-5.4.25/bin/php-config
+make && make install

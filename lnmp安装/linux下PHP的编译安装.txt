@@ -1,0 +1,95 @@
+编译安装php
+mkdir -p /usr/local/php-5.4.25 #建立php安装目录
+
+
+yum install lrzsz gcc libxml2 libxml2-devel openssl openssl-devel curl-devel libjpeg-devel libpng-devel wget zip unzip -y   #安装基础库
+解决libmarypt依赖（yum无源无法下载只能编译安装）
+wget ftp://mcrypt.hellug.gr/pub/crypto/mcrypt/attic/libmcrypt/libmcrypt-2.5.7.tar.gz 
+tar -zxvf libmcrypt-2.5.7.tar.gz 
+cd libmcrypt-2.5.7 
+./configure
+make && make install
+
+
+cd /usr/local/src
+rz  #上传php文件到目录
+tar -zvxf php-5.4.25.tar.gz
+cd php-5.4.25
+#./configure --prefix=/usr/local/php-5.4.25 --with-config-file-path=/usr/local/php-5.4.25/etc --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-mysql-sock=/tmp/mysql.sock --with-gd --with-iconv --with-zlib --enable-xml --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curlwrappers --enable-mbregex --enable-fpm --enable-mbstring --enable-ftp --enable-gd-native-ttf --with-openssl --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --enable-session --with-mcrypt=/usr/local/libmcrypt --with-curl #配置
+./configure --prefix=/usr/local/php-5.4.25 --with-config-file-path=/usr/local/php-5.4.25/etc --with-gd --with-iconv --with-zlib --enable-xml --enable-bcmath  --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curlwrappers --enable-mbregex --enable-fpm --enable-mbstring --enable-ftp --enable-gd-native-ttf  --with-openssl --enable-pcntl --enable-sockets --with-xmlrpc  --enable-zip --enable-soap --without-pear --with-gettext --enable-session --with-mcrypt --with-curl 
+
+
+make #编译
+make install #安装
+cp /usr/local/src/php-5.4.25/php.ini-production /usr/local/php-5.4.25/etc/php.ini #复制php配置文件到安装目录
+ln -s /usr/local/php-5.4.25/etc/php.ini /etc/php.ini #添加软链接
+cp /usr/local/php-5.4.25/etc/php-fpm.conf.default /usr/local/php-5.4.25/etc/php-fpm.conf #拷贝模板文件为php-fpm配置文件
+vi /usr/local/php-5.4.25/etc/php-fpm.conf #编辑
+
+
+user = www #设置php-fpm运行账号为www
+group = www #设置php-fpm运行组为www
+pid = run/php-fpm.pid #取消前面的分号
+设置 php-fpm开机启动
+cp /usr/local/src/php-5.4.25/sapi/fpm/init.d.php-fpm.in /etc/rc.d/init.d/php-fpm #拷贝php-fpm到启动目录
+chmod +x /etc/rc.d/init.d/php-fpm #添加执行权限
+chkconfig php-fpm on #设置开机启动
+vi /usr/local/php-5.4.25/etc/php.ini #编辑配置文件
+
+找到：disable_functions =
+修改为：disable_functions = passthru,exec,system,chroot,scandir,chgrp,chown,shell_exec,proc_open,proc_get_status,ini_alter,ini_alter,ini_restore,dl,openlog,syslog,readlink,symlink,popepassthru,stream_socket_server,escapeshellcmd,dll,popen,disk_free_space,checkdnsrr,checkdnsrr,getservbyname,getservbyport,disk_total_space,posix_ctermid,posix_get_last_error,posix_getcwd, posix_getegid,posix_geteuid,posix_getgid, posix_getgrgid,posix_getgrnam,posix_getgroups,posix_getlogin,posix_getpgid,posix_getpgrp,posix_getpid, posix_getppid,posix_getpwnam,posix_getpwuid, posix_getrlimit, posix_getsid,posix_getuid,posix_isatty, posix_kill,posix_mkfifo,posix_setegid,posix_seteuid,posix_setgid, posix_setpgid,posix_setsid,posix_setuid,posix_strerror,posix_times,posix_ttyname,posix_uname
+#列出PHP可以禁用的函数，如果某些程序需要用到这个函数，可以删除，取消禁用。
+找到：;date.timezone =
+修改为：date.timezone = PRC #设置时区
+找到：expose_php = On
+修改为：expose_php = OFF #禁止显示php版本的信息
+找到：short_open_tag = Off
+修改为：short_open_tag = ON #支持php短标签
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,17 @@
+œ¬‘ÿµÿ÷∑£∫
+http://www.freetds.org/software.html
+≤ŒøºÕ¯“≥£∫
+http://www.cnblogs.com/lsmsky/archive/2012/11/02/2751983.html
+
+√¸¡Ó£∫
+
+wget ftp://ftp.freetds.org/pub/freetds/stable/freetds-stable.tgz
+tar zxvf freetds-stable.tgz
+cd freetds-0.91/ 
+./configure --prefix=/usr/local/freetds --enable-msdblib
+make && make install
+
+cd /usr/local/src/php-5.4.25/ext/mssql/
+/usr/local/php-5.4.25/bin/phpize 
+./configure --with-php-config=/usr/local/php-5.4.25/bin/php-config --with-mssql=/usr/local/freetds
+make && make install
