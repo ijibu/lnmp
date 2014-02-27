@@ -58,8 +58,12 @@ tar zxvf freetds-stable.tgz
 cd freetds-0.91/ 
 ./configure --prefix=/usr/local/freetds --enable-msdblib
 make && make install
+touch /usr/local/freetds/include/tds.h
+touch /usr/local/freetds/lib/libtds.a
+#配置/usr/local/freetds/etc/freetds.conf文件
 
 cd /usr/local/src/php-5.4.25/ext/mssql/
 /usr/local/php-5.4.25/bin/phpize 
 ./configure --with-php-config=/usr/local/php-5.4.25/bin/php-config --with-mssql=/usr/local/freetds
 make && make install
+#修改php.ini，加载mssql.so

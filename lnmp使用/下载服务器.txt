@@ -1,0 +1,14 @@
+Nginx下载服务生产服务器调优
+http://gm100861.blog.51cto.com/1930562/882806
+
+
+之前用Lighthttp做的，测试可以跑到 80MB/s 的流量
+但是换了Nginx以后，到20MB/s就挂掉了。。。悲了个剧。。。
+我要下载的文件一般都在2MB-10MB，Nginx我没改过什么特殊的配置，就装了默认的。
+要做这种下载服务，需要怎么优化一下呢？
+
+试试开启sendfile:
+
+sendfile on;
+sendfile_max_chunk 256K;
+http://wiki.nginx.org/HttpCoreModule#sendfile

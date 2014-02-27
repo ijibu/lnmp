@@ -1,0 +1,3 @@
+1.accept4() failed (24: Too many open files)
+
+http://hi.baidu.com/liheng_2009/item/a5fd8e4afe7cc5a5de2a9fdc
