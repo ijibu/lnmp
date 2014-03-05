@@ -16,3 +16,8 @@ http://stackoverflow.com/questions/15852884/nginx-connect-failed-error
 	
 	#修改php-fmp.conf
 	listen = 127.0.0.1:9000 改为：listen = /var/run/phpfpm.sock
+	
+	两种通信方式之间的性能差异，这里有说明：http://unix.stackexchange.com/questions/91774/performance-of-unix-sockets-vs-tcp-ports
+相关文章：
+http://www.searchtb.com/2012/05/mysql_time_wait.html
+http://www.cnxct.com/default-configuration-and-performance-of-nginx-phpfpm-and-tcp-socket-or-unix-domain-socket/
