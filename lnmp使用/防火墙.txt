@@ -1,0 +1,3 @@
+防火墙规则配置
+默认是在/etc/sysconfig/iptables，可以通过修改/etc/init.d/iptables启动脚本
+来修改相关文件配置。从而达到提高部分安全性，

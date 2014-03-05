@@ -10,4 +10,9 @@ cd APC-3.1.13
 /usr/local/php-5.4.25/bin/phpize 
 ./configure --enable-apc --enable-apc-spinlocks --disable-apc-pthreadmutex --with-php-config=/usr/local/php-5.4.25/bin/php-config
 make && make install
-#修改php.ini配置，加载apc.so
+#修改php.ini配置，加载apc.so，加入如下配置。
+[APC]
+extension=apc.so
+apc.enabled = 1
+apc.shm_size = 64M
+apc.stat = 1

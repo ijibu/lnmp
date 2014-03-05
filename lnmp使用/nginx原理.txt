@@ -1,0 +1,5 @@
+nginx的进程模型
+http://segmentfault.com/q/1010000000326510
+
+Nginx学习之六-nginx核心进程模型
+http://blog.csdn.net/xiajun07061225/article/details/9241179

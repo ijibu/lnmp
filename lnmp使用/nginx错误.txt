@@ -1,3 +1,18 @@
 1.accept4() failed (24: Too many open files)
 
 http://hi.baidu.com/liheng_2009/item/a5fd8e4afe7cc5a5de2a9fdc
+
+2.connect() failed (111: Connection refused) while connecting to upstream, client
+http://stackoverflow.com/questions/15852884/nginx-connect-failed-error
+	I resolved it, it was a configuration file issue, I added:
+
+	location ~ .php$ {
+		try_files $uri =404;
+		fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		fastcgi_pass unix:/var/run/php5-fpm.sock;		#主要是采用sock的方式连接。
+		fastcgi_index index.php;
+		include fastcgi_params;
+	}
+	
+	#修改php-fmp.conf
+	listen = 127.0.0.1:9000 改为：listen = /var/run/phpfpm.sock
