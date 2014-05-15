@@ -1,0 +1,55 @@
+#启动和管理脚本
+执行redis/utils/install_server.sh脚本即可。
+
+
+
+[root@Web-AD utils]# ./install_server.sh 
+Welcome to the redis service installer
+This script will help you easily set up a running redis server
+
+Please select the redis port for this instance: [6379] 6739
+Please select the redis config file name [/etc/redis/6739.conf] 
+Selected default - /etc/redis/6739.conf
+Please select the redis log file name [/var/log/redis_6739.log] 
+Selected default - /var/log/redis_6739.log
+Please select the data directory for this instance [/var/lib/redis/6739] 
+Selected default - /var/lib/redis/6739
+Please select the redis executable path [/usr/local/bin/redis-server] 
+Selected config:
+Port           : 6739
+Config file    : /etc/redis/6739.conf
+Log file       : /var/log/redis_6739.log
+Data dir       : /var/lib/redis/6739
+Executable     : /usr/local/bin/redis-server
+Cli Executable : /usr/local/bin/redis-cli
+Is this ok? Then press ENTER to go on or Ctrl-C to abort.
+Copied /tmp/6739.conf => /etc/init.d/redis_6739
+Installing service...
+Successfully added to chkconfig!
+Successfully added to runlevels 345!
+Starting Redis server...
+Installation successful!
+
+监控工具RedisLive安装
+	参考地址：
+	http://blog.chinaunix.net/uid-22312037-id-3580019.html
+	http://www.nkrode.com/article/real-time-dashboard-for-redis
+
+yum install python-setuptools
+
+#Install pip
+wget https://raw.github.com/pypa/pip/master/contrib/get-pip.py
+python get-pip.py
+yum install python-devel.x86_64		#安装devel库
+
+pip install tornado
+pip install redis
+pip install python-dateutil
+pip install argparse		#if you're running Python < 2.7:
+
+
+
+
+升级python
+http://my.oschina.net/zhangdapeng89/blog/86134
+wget https://www.python.org/ftp/python/2.7.6/Python-2.7.6.tar.xz

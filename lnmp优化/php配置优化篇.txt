@@ -16,3 +16,8 @@ extension=apc.so
 apc.enabled = 1
 apc.shm_size = 64M
 apc.stat = 1
+
+upstream phpbackend {
+	server   unix:/var/run/phpfpm.sock weight=100 max_fails=10 fail_timeout=30;
+	server   unix:/var/run/phpfpm1.sock weight=100 max_fails=10 fail_timeout=30;
+}

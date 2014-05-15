@@ -1,0 +1,79 @@
+zabbix server安装
+wget http://softlayer-dal.dl.sourceforge.net/project/zabbix/ZABBIX%20Latest%20Stable/2.2.3/zabbix-2.2.3.tar.gz
+./configure --prefix=/usr/local/zabbix --enable-server --enable-proxy --enable-agent --with-mysql=/usr/local/mysql/bin/mysql_config --with-net-snmp --with-libcurl
+make && make install
+
+/usr/local/mysql/bin/mysql -uroot -p123456 -e "create database zabbix character set utf8"
+/usr/local/mysql/bin/mysql -uroot -p123456 -e "GRANT ALL PRIVILEGES ON zabbix.* TO 'zabbix'@'localhost' IDENTIFIED BY 'zabbix';flush privileges;"
+
+/usr/local/mysql/bin/mysql -uroot -p123456 zabbix < database/mysql/schema.sql
+/usr/local/mysql/bin/mysql -uroot -p123456 zabbix < database/mysql/images.sql
+/usr/local/mysql/bin/mysql -uroot -p123456 zabbix < database/mysql/data.sql
+
+#修改php配置文件，以满足运行条件
+sed -i 's/^(.*)post_max_size =.*$/post_max_size = 16M/g' /usr/local/php-5.4.25/etc/php.ini
+sed -i 's/^(.*)max_execution_time =.*$/max_execution_time = 300/g' /usr/local/php-5.4.25/etc/php.ini   
+sed -i 's/^(.*)max_input_time =.*$/max_input_time = 300/g' /usr/local/php-5.4.25/etc/php.ini  
+
+安装GD库的jpeg和freetype支持
+#安装jpeg库
+wget http://www.ijg.org/files/jpegsrc.v9a.tar.gz
+tar xf jpegsrc.v9a.tar.gz 
+./configure --prefix=/usr/local/jpeg
+make && make install
+#安装freetype库
+yum install freetype freetype-devel jpeg 
+#重新编译安装php,添加--with-jpeg-dir=/usr/local/jpeg,--with-png-dir,--with-freetype-dir这三个编译选项。
+./configure --prefix=/usr/local/php-5.4.25 --with-config-file-path=/usr/local/php-5.4.25/etc --with-gd --with-iconv --with-zlib --enable-xml --enable-bcmath  --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curlwrappers --enable-mbregex --enable-fpm --enable-mbstring --enable-ftp --enable-gd-native-ttf  --with-openssl --enable-pcntl --enable-sockets --with-xmlrpc  --enable-zip --enable-soap --without-pear --with-gettext --enable-session --with-mcrypt --with-curl --with-jpeg-dir=/usr/local/jpeg --with-png-dir --with-freetype-dir
+make && make install
+
+
+zabbix前端安装好后，默认的用户名是Admin，密码是zabbix。
+
+
+
+
+
+
+
+
+
+zabbix agent安装
+#安装依赖包
+yum install net-snmp net-snmp-devel
+#配置zabbix用户和组
+groupadd -g 1006 zabbix
+useradd -u 1006 -g 1006 -s /sbin/nologix -M zabbix
+#下载源码包并解压
+wget http://www.zabbix.com/downloads/2.2.1/zabbix_agents_2.2.1.linux2_6.amd64.tar.gz
+tar xf zabbix-2.2.3.tar.gz
+cd zabbix-2.2.3
+#编译安装
+./configure --enable-agent --prefix=/usr/local/zabbix
+make && make install
+
+#修改配置文件
+cat >>/etc/services<<EOF
+zabbix-agent 10050/tcp 		#Zabbix Agent
+zabbix-agent 10050/udp 		#Zabbix Agent
+zabbix-trapper 10051/tcp 	#Zabbix Trapper
+zabbix-trapper 10051/udp 	#Zabbix Trapper
+EOF
+
+#修改配置文件中的配置设置。
+/usr/local/zabbix/etc/zabbix_agentd.conf
+/usr/local/zabbix/etc/zabbix_agent.conf
+
+#添加并修改启动脚本
+cp misc/init.d/fedora/core/zabbix_agentd /etc/init.d/
+chmod a+x /etc/init.d/zabbix_*
+
+#修改 /etc/init.d/zabbix_agentd 变量定义：
+BASEDIR=/usr/local/zabbix/zabbix_agent
+FULLPATH=$BASEDIR/sbin/$BINARY_NAME
+#configuration file
+CONF_FILE=$BASEDIR/etc/zabbix_agentd.conf		#这个变量是新添加的。
+action $"Starting $BINARY_NAME: " $FULLPATH -c $CONF_FILE
+
+#开启10050端口
+/sbin/iptables -I INPUT -p tcp --dport 10050 -j ACCEPT

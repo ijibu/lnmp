@@ -1,0 +1,16 @@
+之前遇到的项目都是php和mysql在同一台机子上的情况还比较好安装，现在遇到的情况是
+php和mysql在不同的机子上安装mysql驱动的问题。
+首先需要需要下载mysql，只安装mysql的客户端就行了。
+如果只编译MySQL客户端库和客户端程序而不是服务器，使用-WITHOUT_SERVER选项：
+#安装mysql客户端
+cmake ./ -DWITHOUT_SERVER=ON -DCMAKE_INSTALL_PREFIX=/usr/local/mysql -Wno-dev
+make && make install
+
+#安装mysql扩展
+cd /usr/local/src/php-5.4.25/ext/mysql/
+/usr/local/php-5.4.25/bin/phpize 
+./configure --with-php-config=/usr/local/php-5.4.25/bin/php-config --with-mysql=/usr/local/mysql
+make && make install
+#修改配置文件，加载mysql.so，重新reload配置文件
+#添加mysqli驱动
+./configure --with-php-config=/usr/local/php-5.4.25/bin/php-config --with-mysqli=/usr/local/mysql/bin/mysql_config
