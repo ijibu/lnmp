@@ -4,3 +4,179 @@
 	'compgen -c'命令会显示所有可用命令。
 3.代码搜索，使用ack(如何在Linux上提高文本搜索效率？)
 	http://os.51cto.com/art/201402/430543.htm
+
+批量替换文件内容
+find -name '要查找的文件名' | xargs perl -pi -e 's|被替换的字符串|替换后的字符串|g'
+
+修改文件的编码
+iconv -f gbk -t utf-8 -c 文件名
+
+cat *.txt > SogouCA.txt
+
+删除大小为0的文件
+find . -type f -size 0 -exec rm -f {} \;  
+
+批量修改文件的编码
+find . -type f -exec iconv -f gbk -t utf-8 -c {} -o {} \; 
+
+vim下查看文件编码
+:set fileencoding
+
+查看当前TCP连接的状态和对应的连接数量
+netstat -n | awk '/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}'
+
+查看apache每秒的流量
+tail -f access.log | awk '{print $4}' | uniq -c
+
+
+查看当前linux内核加载了那些模块
+lsmod
+
+清空某个文件
+cat /dev/null > rewrite.log 
+
+linux 目录 文件 大小 排序
+ls -S
+
+递归查找某个目录下面的文件，并删除
+find /webbak/b12_1/ -name .svn -exec rm -rf {} \;
+
+复制目录，并且保留权限
+cp -a name1 name2
+
+查看httpd的进程
+ps aux |grep  httpd
+
+linux递归 查找 文件内容
+grep -n -ri "localhost" ./
+这个命令会把当前目录下所有文件内容中包含'localhost'的文件列出来，-r表示递归，-i表示忽略大小写，-n表示列出查找到的位置所在的行数。
+
+上传、下载文件
+上传：rz
+下载：sz
+
+
+公网上mysql慢查询日志位置：
+/var/log/mysql_slow.log
+/usr/local/mysql/bin/mysql  -u guodong0745 -pTuoKe2012
+
+
+
+2012年4月2日
+sql常用命令：
+	清空数据表中的数据
+	TRUNCATE TABLE  `th_access_cache`;
+
+	th_member表更新sql
+	ALTER TABLE  `th_member` ADD  `mail` TINYINT( 1 ) NOT NULL DEFAULT  '0' COMMENT  '是否发送验证通过邮件' AFTER  `open`;
+
+数据库结构比较工具
+mysqldiff -u=root -p=root bianji ceshi
+
+
+递归删除当前目录下面.html文件
+find ./ -name "*.html" -exec rm -rf {} \;
+图片缩放命令
+find ./ -type f -exec convert -resize 220 -quality 80 {} /var/tmp/{} \;
+
+
+
+
+6月8日：
+1、linux下面递归删除某个目录下面所有的空目录
+find /data -type d -empty | xargs -exec rmdir;
+
+找出某个目录下面所有后缀名为.html的文件
+find ./ -type f -name *.html;
+
+2、递归列出某个目录下面所有的文件
+ls -R
+3、递归统计某个目录下面的文件数量
+ls -R | wc -l
+find ./ -type f | wc -l
+1) 统计当前文件夹下文件的个数
+ls -l |grep "^-"|wc -l
+
+2) 统计当前文件夹下目录的个数
+ls -l |grep "^d"|wc -l
+ 
+3) 统计当前文件夹下文件的个数，包括子文件夹里的 
+ls -lR|grep "^-"|wc -l
+ 
+4) 统计文件夹下目录的个数，包括子文件夹里的 
+ls -lR|grep "^d"|wc -l
+ 
+说明：
+ls -l 
+长列表输出当前文件夹下文件信息(注意这里的文件，不同于一般的文件，可能是目录、链接、设备文件等)
+ 
+grep "^-" 
+这里将长列表输出信息过滤一部分，只保留一般文件，如果只保留目录就是 ^d
+ 
+wc -l 
+统计输出信息的行数，因为已经过滤得只剩一般文件了，所以统计结果就是一般文件信息的行数，又由于一行信息对应一个文件，所以也就是文件的个数。
+
+一、在linux下怎么查看自己机器的端口开放情况？？
+	netstat -lnp				//查看所有占用端口：
+	netstat -lnp|grep 80		//查看某个端口是否占用
+二、修改ssh的默认端口为：31796
+	1、首先在防火墙里面开启31796这个端口
+		/etc/sysconfig/iptables
+		-A INPUT -p tcp -m tcp --dport 37196 -j ACCEPT
+	2、重启防火墙
+		service iptables restart
+	3、修改/etc/ssh/sshd_config文件的port为31796
+	4、重启sshd
+		service sshd restart
+	5、在另一个窗口用新的端口ssh登录下，看看能成功不
+		能成功，则关闭防火墙里面的22端口。
+三、禁用ping
+	echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_all
+四、不准许root登录ssh
+	1、首先新建一个普通用户
+		groupadd wactos		（我爱centos）
+		useradd  -G wactos wsygcym	(我是一个纯爷们)
+		passwd wsygcym : aHnzmkan!@#   （阿辉你怎么看123）
+	2、修改sshd_config的配置,禁用root登录
+		将PermitRootLogin改为no，重启ssh即可。
+五、防火墙配置
+	配置某些端口只能本机访问，比如数据库端口，但是有个问题，就没法远程连库咯。
+	把3306端口设置为只允许本机访问
+	[root@tp ~]#/sbin/iptables -A INPUT -p tcp -s 127.0.0.1 --dport 3306 -j ACCEPT
+	[root@tp ~]#/sbin/iptables -A OUTPUT -p tcp -s 127.0.0.1 --dport 3306 -j ACCEPT
+六、设置Linux用户连续N次输入错误密码进行登陆时，自动锁定X分钟(pam_tally2)
+	pam版本：
+	rpm -q pam
+	pam-1.1.1-10.el6_2.1.x86_64
+	http://www.edward-han.com/127.html
+	
+七、防火墙关闭与开启
+	1) 重启后生效 
+	开启： chkconfig iptables on 
+	关闭： chkconfig iptables off 
+
+	2) 即时生效，重启后失效 
+	开启： service iptables start 
+	关闭： service iptables stop 
+	
+	查看iptables的状态，chkconfig --list，1-7都为关闭的话，说明没有开启该服务。
+
+执行脚本出现错误的解决办法：
+	-bash: ./nginx_install.sh: /bin/bash^M: bad interpreter: 没有那个文件或目录
+	VI打开文件，没发现任何问题，
+	把/bin/bash改成/bin/sh
+	-bash: ./test.sh: /bin/sh^M: bad interpreter: No such file or directory
+	依然报错，脚本内容在VI下没有任何问题，仔细一看错误消息，^M..明显在第一行末尾被加入了个^M，
+	这种情况应该有两种原因
+	1.在WIN底下用文本编辑工具修改过参数变量，在保存的时候没注意编码格式造成的，
+	2.也有可能是在VIM里修改，第一行末尾按到ctrl_v
+	错误原因之一很有可能是你的脚本文件是DOS格式的, 即每一行的行尾以\r\n来标识, 其ASCII码分别是0x0D, 0x0A.
+	可以有很多种办法看这个文件是DOS格式的还是UNIX格式的, 还是MAC格式的
+	（1）. vi filename
+	然后用命令
+	:set ff?
+	可以看到dos或unix的字样. 如果的确是dos格式的, 那么你可以用set ff=unix把它强制为unix格式的, 然后存盘退出. 再运行一遍看.
+	2.可以用执行dos2unix 命令转换编码
+	#dos2unix myshell.sh
+	
+	http://hi.baidu.com/tim1234/item/978ac732adc7d4f1a884283c
