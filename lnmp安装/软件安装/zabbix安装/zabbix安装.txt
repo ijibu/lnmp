@@ -45,7 +45,8 @@ yum install net-snmp net-snmp-devel
 groupadd -g 1006 zabbix
 useradd -u 1006 -g 1006 -s /sbin/nologix -M zabbix
 #下载源码包并解压
-wget http://www.zabbix.com/downloads/2.2.1/zabbix_agents_2.2.1.linux2_6.amd64.tar.gz
+#wget http://www.zabbix.com/downloads/2.2.1/zabbix_agents_2.2.1.linux2_6.amd64.tar.gz
+wget http://softlayer-dal.dl.sourceforge.net/project/zabbix/ZABBIX%20Latest%20Stable/2.2.3/zabbix-2.2.3.tar.gz
 tar xf zabbix-2.2.3.tar.gz
 cd zabbix-2.2.3
 #编译安装
@@ -69,7 +70,7 @@ cp misc/init.d/fedora/core/zabbix_agentd /etc/init.d/
 chmod a+x /etc/init.d/zabbix_*
 
 #修改 /etc/init.d/zabbix_agentd 变量定义：
-BASEDIR=/usr/local/zabbix/zabbix_agent
+BASEDIR=/usr/local/zabbix
 FULLPATH=$BASEDIR/sbin/$BINARY_NAME
 #configuration file
 CONF_FILE=$BASEDIR/etc/zabbix_agentd.conf		#这个变量是新添加的。
