@@ -1,0 +1,23 @@
+A机子SSH免密码登录B机子
+1.在A机下生成公钥/私钥对。
+[hadoop@wang-PC ~]$ ssh-keygen -t rsa -P ''
+   敲击回车键即可，
+   它在/home/hadoop下生成.ssh目录，.ssh下有id_rsa和id_rsa.pub。
+   
+2.把A机器下的id_rsa.pub复制到B机器下的.ssh/authorized_keys文件里。
+[hadoop@wang-PC ~]$ scp .ssh/id_rsa.pub hadoop@192.168.10.107:/home/hadoop/id_rsa.pub.hadoop_wang
+hadoop@192.168.10.107's password:
+   由于还没有免密码登录的，所以要输入密码。
+
+3.B机把从A机复制的id_rsa.pub.hadoop_wang添加到.ssh/authorzied_keys文件里。
+[hadoop@chen-PC ~]$ mkdir ~/.ssh (如果已经存在这个文件, 跳过这条)
+[hadoop@chen-PC ~]$ touch ~/.ssh/authorized_keys (如果已经存在这个文件, 跳过这条)
+[hadoop@chen-PC ~]$ cat id_rsa.pub.hadoop_wang >> ~/.ssh/authorized_keys
+[hadoop@chen-PC ~]$ chmod 600 .ssh/authorized_keys
+   authorized_keys的权限要是600。
+   
+4.A机登录B机。
+[hadoop@wang-PC ~]$ ssh 192.168.10.107(不需要密码, 登录成功)
+
+远程拷贝文件
+scp -P 22 root@192.168.1.239:/usr/local/nginx/conf/conf.tar.gz ./
