@@ -21,3 +21,5 @@ hadoop@192.168.10.107's password:
 
 远程拷贝文件
 scp -P 22 root@192.168.1.239:/usr/local/nginx/conf/conf.tar.gz ./
+远程复制文件
+scp -P 22 /usr/local/nginx/conf/conf.tar.gz root@192.168.1.239:/home/hadoop
