@@ -21,3 +21,24 @@ upstream phpbackend {
 	server   unix:/var/run/phpfpm.sock weight=100 max_fails=10 fail_timeout=30;
 	server   unix:/var/run/phpfpm1.sock weight=100 max_fails=10 fail_timeout=30;
 }
+
+缓存建议采用zendopcache，APC等缓存会被淘汰。
+zendopcache缓存安装（http://www.laogui.com/Zend-Opcache）：
+	wget http://pecl.php.net/get/zendopcache-7.0.3.tgz
+	tar xzf zendopcache-7.0.3.tgz
+	cd zendopcache-7.0.2
+	phpize
+	./configure --with-php-config=/usr/local/php/bin/php-config
+	make
+	make install
+	
+	如果显示Installing shared extensions: /usr/local/php/lib/php/extensions/no-debug-zts-20100525/ 表示安装完成，下面要修改php的配置文件让它生效
+
+	在 php.ini 的最后面加入下面几行
+	zend_extension=/usr/local/php/lib/php/extensions/no-debug-zts-20100525/opcache.so
+	opcache.memory_consumption=128
+	opcache.interned_strings_buffer=8
+	opcache.max_accelerated_files=4000
+	opcache.revalidate_freq=60
+	opcache.fast_shutdown=1
+	opcache.enable_cli=1
