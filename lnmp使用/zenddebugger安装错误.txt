@@ -1,0 +1,16 @@
+ZendDebugger安装错误
+1.Failed loading /usr/local/php-5.4.25/include/php/ext/ZendDebugger.so:  libssl.so.0.9.8: cannot open shared object file: No such file or directory
+  Failed loading /usr/local/php-5.4.25/include/php/ext/ZendDebugger.so:  libcrypto.so.0.9.8: cannot open shared object file: No such file or directory
+	原因：因为最新的linux发行版本 libssl 和 libcrypto 已升级到1.0.0
+
+	解决：
+	只要创建相应的软链接就可以
+	sudo ln -s /usr/lib64/libcrypto.so /usr/lib64/libcrypto.so.0.9.8
+	sudo ln -s /usr/lib64/libssl.so.10 /usr/lib64/libssl.so.0.9.8
+
+	如果没找到合适版本的libcrypto，可以从这里下载：http://www.openssl.org
+	然后
+	$ ./config shared
+	$ make
+
+	将编译目录生成的复制到 libcrypto.so.0.9.8 /usr/lib64/目录，按照上面的方法操作即可。
