@@ -2,25 +2,28 @@
 
 #安装bison
 echo "正在安装bison******************"
-cd /root/download/
-tar xf bison-3.0.tar.gz
-cd bison-3.0
+cd /usr/local/src
+wget ftp://ftp.gnu.org/gnu/bison/bison-3.0.4.tar.gz
+tar xf bison-3.0.4.tar.gz
+cd bison-3.0.4
 ./configure 
 make && make install
 
 #安装ncurses
 echo "正在安装ncurses******************"
-cd /root/download/
-tar xf ncurses-5.8.tar.gz
-cd ncurses-5.8
+cd /usr/local/src
+wget ftp://ftp.gnu.org/gnu/ncurses/ncurses-6.0.tar.gz
+tar xf ncurses-6.0.tar.gz
+cd ncurses-6.0
 ./configure 
 make && make install
 
 #安装CMAKE
 echo "正在安装CMAKE******************"
-cd /root/download/
-tar xf cmake-2.8.12.2.tar.gz
-cd cmake-2.8.12.2
+cd /usr/local/src
+wget https://cmake.org/files/v3.3/cmake-3.3.2.tar.gz
+tar xf cmake-3.3.2.tar.gz
+cd cmake-3.3.2
 ./configure 
 gmake && make install
 
@@ -29,7 +32,7 @@ echo "正在安装mysql******************"
 cd /root/download/
 tar xf mysql-5.6.17.tar.gz
 cd mysql-5.6.17
-cmake ./ -DCMAKE_INSTALL_PREFIX=/usr/local/mysql -DMYSQL_DATADIR=/usr/local/mysql/data -Wno-dev
+cmake ./ -DCMAKE_INSTALL_PREFIX=/usr/local/mysql -DMYSQL_DATADIR=/usr/local/mysql/data -DDOWNLOAD_BOOST=1 -DWITH_BOOST=/usr/local/src/boost
 make && make install
 
 #添加用户和用户组
@@ -62,6 +65,12 @@ service mysql start
 
 #修改mysql root登录的密码(mysql必须先启动了才行哦)
 cd /usr/local/mysql
+#################################
+#mysql5.7以后的版本修改密码的方法
+#mysql> use mysql
+#Database changed
+#mysql> update user set authentication_string=password("123456") where user="root" and Host="localhost";
+#################################
 ./bin/mysqladmin -u root password '123456'
 #./bin/mysqladmin -u root -h web-mysql password '123456' #没执行成功。
 
@@ -77,3 +86,14 @@ delete from user where password="";
 update user set host = '%' where user = 'root';
 #重启mysql生效
 /etc/init.d/mysql restart
+
+
+
+boost安装
+
+
+-- BOOST_INCLUDE_DIR /usr/local/include
+-- LOCAL_BOOST_DIR 
+-- LOCAL_BOOST_ZIP 
+-- Could not find (the correct version of) boost.
+-- MySQL currently requires boost_1_59_0

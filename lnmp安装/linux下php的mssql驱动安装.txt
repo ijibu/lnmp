@@ -5,7 +5,7 @@ http://www.cnblogs.com/lsmsky/archive/2012/11/02/2751983.html
 
 √¸¡Ó£∫
 
-wget ftp://ftp.freetds.org/pub/freetds/stable/freetds-stable.tgz
+wget ftp://ftp.freetds.org/pub/freetds/current/freetds-current.tar.gz
 tar zxvf freetds-stable.tgz
 cd freetds-0.91/ 
 ./configure --prefix=/usr/local/freetds --enable-msdblib

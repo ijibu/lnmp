@@ -26,17 +26,17 @@ ulimit -SHn 65535
 
 ldconfig
 
-wget http://nginx.org/download/nginx-1.4.5.tar.gz
-tar zxvf nginx-1.4.5.tar.gz
-cd nginx-1.4.5/
+wget http://nginx.org/download/nginx-1.9.6.tar.gz
+tar zxvf nginx-1.9.6.tar.gz
+cd nginx-1.9.6/
 ./configure --user=www --group=www --prefix=/usr/local/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-pcre
 make && make install
 
 cd ../
 
-wget -c "http://wiki.nginx.org/index.php?title=RedHatNginxInitScript&action=raw&anchor=nginx" -O init.d.nginx
-cp init.d.nginx /etc/init.d/nginx
-chmod +x /etc/init.d/nginx
+#wget -c "http://wiki.nginx.org/index.php?title=RedHatNginxInitScript&action=raw&anchor=nginx" -O init.d.nginx
+#cp init.d.nginx /etc/init.d/nginx
+#chmod +x /etc/init.d/nginx
 #需要手动配置下/etc/init.d/nginx
 
 #chkconfig --add nginx

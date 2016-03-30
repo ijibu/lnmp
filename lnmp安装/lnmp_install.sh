@@ -1,7 +1,22 @@
 ##############################################
-## nginx1.4.5安装脚本
-##			云更新web组（liuhui05）	
+## centos7下面nginx+mysql+php安装脚本
+##			ijibu(ijibu.com@gmail.com)	
 #############################################
+
+#软件版本号
+nginx_version="nginx-1.9.6"
+php_version="php-7.0.0RC6"
+mysql_version="mysql-5.7.9"
+
+#软件下载地址
+nginx_download_url="http://nginx.org/download/nginx-1.9.6.tar.gz"
+php_download_url="https://downloads.php.net/~ab/php-7.0.0RC6.tar.gz"
+mysql_download_url="http://cdn.mysql.com/Downloads/MySQL-5.7/mysql-5.7.9.tar.gz"
+
+#软件安装地址
+nginx_install_path="/usr/local/nginx"
+php_install_path="/usr/local/php"
+mysql_install_path="/usr/local/mysql"
 
 #!/bin/bash
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
@@ -13,35 +28,48 @@ if [ $(id -u) != "0" ]; then
     exit 1
 fi
 
+echo "创建相关目录"
+mkdir -p $nginx_install_path
+mkdir -p $php_install_path
+mkdir -p $mysql_install_path
+mkdir -p /usr/local/src
+mkdir -p /var/log/nginx
+
+
 echo "安装系统工具包"
-yum -y install wget gcc gcc-c++ lrzsz ntp unzip
+yum -y install wget gcc gcc-c++ lrzsz ntp unzip pcre-devel zlib zlib-devel openssl openssl-devel
 
 #同步时间
+echo "同步系统时间"
 cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 ntpdate us.pool.ntp.org
+
+echo "创建相关用户"
+groupadd www
+useradd -s /sbin/nologin -g www www
+
+echo "下载相关软件包"
+cd /usr/local/src
+wget $nginx_download_url
+wget $php_download_url
+wget $mysql_download_url
+wget ftp://mcrypt.hellug.gr/pub/crypto/mcrypt/attic/libmcrypt/libmcrypt-2.5.7.tar.gz 
 
 
 echo "开始安装nginx..........."
 echo 
-mkdir -p /var/log/nginx
 chown www.www /var/log/nginx
-cd /root/download
 
-yum -y install pcre-devel zlib zlib-devel openssl openssl-devel
-
-groupadd www
-useradd -s /sbin/nologin -g www www
-
-tar zxvf nginx-1.4.5.tar.gz
-cd nginx-1.4.5/
-./configure --user=www --group=www --prefix=/usr/local/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-pcre
+tar zxvf nginx-1.9.6.tar.gz
+cd nginx-1.9.6/
+./configure --user=www --group=www --prefix=$nginx_install_path --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-pcre
 make && make install
 
 cd ../
 
-wget -c "http://wiki.nginx.org/index.php?title=RedHatNginxInitScript&action=raw&anchor=nginx" -O init.d.nginx
-cp init.d.nginx /etc/init.d/nginx
-chmod +x /etc/init.d/nginx
+#wget -c "http://wiki.nginx.org/index.php?title=RedHatNginxInitScript&action=raw&anchor=nginx" -O init.d.nginx
+#cp init.d.nginx /etc/init.d/nginx
+#chmod +x /etc/init.d/nginx
 #需要手动配置下/etc/init.d/nginx
 echo "需要手动配置下/etc/init.d/nginx"
 
@@ -55,7 +83,6 @@ echo "nginx安装完成"
 echo "需要手动配置下/etc/init.d/nginx"
 
 
-mkdir -p /usr/local/php-5.4.25
 #安装基础库
 yum -y install libxml2 libxml2-devel curl-devel libjpeg-devel libpng-devel
 
@@ -70,15 +97,16 @@ echo "####################################
 	## 安装php-5.4.25
 	####################################"
 cd /usr/local/src
-tar zvxf php-5.4.25.tar.gz
-cd php-5.4.25
-./configure --prefix=/usr/local/php-5.4.25 --with-config-file-path=/usr/local/php-5.4.25/etc --with-gd --with-iconv --with-zlib --enable-xml --enable-bcmath  --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curlwrappers --enable-mbregex --enable-fpm --enable-mbstring --enable-ftp --enable-gd-native-ttf  --with-openssl --enable-pcntl --enable-sockets --with-xmlrpc  --enable-zip --enable-soap --without-pear --with-gettext --enable-session --with-mcrypt --with-curl 
+tar zvxf $php_version.tar.gz
+cd $php_version
+./configure --prefix=$php_install_path --with-config-file-path=$php_install_path/etc --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-gd --with-iconv --with-zlib --enable-xml --enable-bcmath  --enable-shmop --enable-sysvsem --enable-inline-optimization  --enable-mbregex --enable-fpm --enable-mbstring --enable-ftp --enable-gd-native-ttf  --with-openssl --enable-pcntl --enable-sockets --with-xmlrpc  --enable-zip --enable-soap --without-pear --with-gettext --enable-session --with-mcrypt --with-curl 
 make #编译
 make install #安装
 
-cp /root/download/php-5.4.25/php.ini-production /usr/local/php-5.4.25/etc/php.ini
-cp /root/download/php-5.4.25/sapi/fpm/php-fpm.conf /usr/local/php-5.4.25/etc/php-fpm.conf
-cp /root/download/php-5.4.25/sapi/fpm/init.d.php-fpm.in /etc/init.d/php-fpm
+cd /usr/local/src
+cp $php_version/php.ini-production $php_install_path/etc/php.ini
+cp $php_version/sapi/fpm/php-fpm.conf $php_install_path/etc/php-fpm.conf
+cp $php_version/sapi/fpm/init.d.php-fpm.in /etc/init.d/php-fpm
 chmod +x /etc/init.d/php-fpm #添加执行权限
 
 #需要手动配置下/etc/init.d/php-fpm
@@ -90,34 +118,44 @@ chkconfig php-fpm on
 
 #安装bison
 echo "正在安装bison******************"
-cd /root/download/
-tar xf bison-3.0.tar.gz
-cd bison-3.0
+cd /usr/local/src
+wget ftp://ftp.gnu.org/gnu/bison/bison-3.0.4.tar.gz
+tar xf bison-3.0.4.tar.gz
+cd bison-3.0.4
 ./configure 
 make && make install
 
 #安装ncurses
 echo "正在安装ncurses******************"
-cd /root/download/
-tar xf ncurses-5.8.tar.gz
-cd ncurses-5.8
+cd /usr/local/src
+wget ftp://ftp.gnu.org/gnu/ncurses/ncurses-6.0.tar.gz
+tar xf ncurses-6.0.tar.gz
+cd ncurses-6.0
 ./configure 
 make && make install
 
 #安装CMAKE
 echo "正在安装CMAKE******************"
-cd /root/download/
-tar xf cmake-2.8.12.2.tar.gz
-cd cmake-2.8.12.2
+cd /usr/local/src
+wget https://cmake.org/files/v3.3/cmake-3.3.2.tar.gz
+tar xf cmake-3.3.2.tar.gz
+cd cmake-3.3.2
 ./configure 
 gmake && make install
 
+#https://typecodes.com/web/centos7compilemysql.html
+#http://www.tuicool.com/articles/E3yYV3
 #安装mysql
 echo "正在安装mysql******************"
-cd /root/download/
-tar xf mysql-5.6.17.tar.gz
-cd mysql-5.6.17
-cmake ./ -DCMAKE_INSTALL_PREFIX=/usr/local/mysql -DMYSQL_DATADIR=/usr/local/mysql/data -Wno-dev
+##############################################
+## 从MySQL 5.7.5开始Boost库是必需的，下载Boost库，
+## 在解压后复制到/usr/local/boost目录下，然后重新
+## cmake并在后面的选项中加上选项 -DWITH_BOOST=/usr/local/boost
+#############################################
+cd /usr/local/src
+tar xf $mysql_version.tar.gz
+cd $mysql_version
+cmake ./ -DCMAKE_INSTALL_PREFIX=$mysql_install_path -DMYSQL_DATADIR=$mysql_install_path/data -DDOWNLOAD_BOOST=1 -DWITH_BOOST=/usr/local/src/boost
 make && make install
 
 #添加用户和用户组
@@ -131,7 +169,7 @@ useradd mysql -g mysql -M -s /sbin/nologin
 
 #初始化数据库
 echo "正在初始化数据库******************"
-cd /usr/local/mysql
+cd $mysql_install_path
 chown -R mysql:mysql . #(为了安全安装完成后请修改权限给root用户)
 scripts/mysql_install_db --user=mysql #(先进行这一步再做如下权限的修改)
 chown -R root:mysql .  #(将权限设置给root用户，并设置给mysql组， 取消其他用户的读写执行权限，仅留给mysql "rx"读执行权限，其他用户无任何权限)
@@ -149,7 +187,7 @@ chkconfig --add mysql
 service mysql start
 
 #修改mysql root登录的密码(mysql必须先启动了才行哦)
-cd /usr/local/mysql
+cd $mysql_install_path
 ./bin/mysqladmin -u root password '123456'
 #./bin/mysqladmin -u root -h web-mysql password '123456' #没执行成功。
 
@@ -167,11 +205,3 @@ service iptables restart
 #重启mysql生效
 /etc/init.d/mysql restart
 
-#安装mysql扩展
-echo "正在安装php-mysql扩展******************"
-cd /root/download/php-5.4.25/ext/mysql/
-/usr/local/php-5.4.25/bin/phpize 
-./configure --with-php-config=/usr/local/php-5.4.25/bin/php-config --with-mysql=/usr/local/mysql
-make && make install
-echo "php-mysql扩展安装成功******************"
-echo "请手动修改php.ini配置文件，加载mysql.so，重启php-fpm"
